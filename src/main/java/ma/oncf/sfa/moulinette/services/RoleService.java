@@ -2,7 +2,6 @@ package ma.oncf.sfa.moulinette.services;
 
 import ma.oncf.sfa.moulinette.dto.RoleReqDto;
 import ma.oncf.sfa.moulinette.dto.RoleResDto;
-import ma.oncf.sfa.moulinette.entities.Role;
 
 import java.util.List;
 

@@ -57,11 +57,9 @@ public class AuthControllerImpl implements AuthController {
                 authResDto.setToken(jwt);
                 return ResponseEntity.ok().body(authResDto);
             }catch (Exception e){
-                //return new ResponseEntity<>("Matricule et/ou Mot de passe incorrect", HttpStatus.FORBIDDEN);
                 throw new EntityNotFoundException("Matricule et/ou Mot de passe incorrect");
             }
         }
         else throw new EntityNotFoundException("Votre compte est desactive. Merci de contacter l'administrateur");
-        //new ResponseEntity<>("Votre compte est desactive. Merci de contacter l'administrateur", HttpStatus.FORBIDDEN);
     }
 }
