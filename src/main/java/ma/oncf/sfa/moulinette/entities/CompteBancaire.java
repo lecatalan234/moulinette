@@ -3,6 +3,7 @@ package ma.oncf.sfa.moulinette.entities;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 
@@ -18,6 +19,7 @@ public class CompteBancaire extends Auditable<String>{
     private boolean isCentralisateur;
 
     @ManyToOne
+    @ToString.Exclude
     private Banque banque;
 
 }

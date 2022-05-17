@@ -2,6 +2,7 @@ package ma.oncf.sfa.moulinette.controllers;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import ma.oncf.sfa.moulinette.dto.ImportationResDto;
+import ma.oncf.sfa.moulinette.entities.Comptabilite;
 import ma.oncf.sfa.moulinette.entities.EnrMouvement;
 import ma.oncf.sfa.moulinette.services.ImportationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,14 +35,24 @@ public class ImportationControllerImpl implements ImportationController {
     }
 
     @Override
+    public ResponseEntity<List<String>> chargementFichierComptable(List<MultipartFile> multipartFiles, String matricule) {
+        return ResponseEntity.ok().body(importationService.chargementFichierComptable(multipartFiles,matricule));
+    }
+
+    @Override
     public ResponseEntity<List<EnrMouvement>> enrichirFichierBancaire(Integer idImportation) {
         return ResponseEntity.ok().body(this.importationService.enrichirFichierBancaire(idImportation));
     }
 
     @Override
-    public ResponseEntity<Resource> telechargerFichierBancaire(Integer idImportation) throws IOException {
+    public ResponseEntity<List<Comptabilite>> enrichirFichierComptable(Integer idImportation) {
+        return ResponseEntity.ok().body(this.importationService.enrichirFichierComptable(idImportation));
+    }
+
+    @Override
+    public ResponseEntity<Resource> telechargerFichier(Integer idImportation) throws IOException {
         String PATH_DOWNLOAD_BANK = "./moulinetteFiles/downloads/";
-        String filename = importationService.telechargerFichierBancaire(idImportation);
+        String filename = importationService.telechargerFichier(idImportation);
         Path filePath = Path.of(PATH_DOWNLOAD_BANK+filename);
         if(!Files.exists(filePath)) {
             throw new FileNotFoundException(filename + " non trouve au niveau du serveur");

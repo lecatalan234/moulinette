@@ -25,4 +25,8 @@ public class Fichier extends Auditable<String>{
     @OneToMany(mappedBy = "fichier")
     @JsonIgnore
     private List<EnrAncienSolde> enrAncienSolde;
+
+    @OneToMany(mappedBy = "fichier")
+    @JsonIgnore
+    private List<Comptabilite> comptabilites;
 }

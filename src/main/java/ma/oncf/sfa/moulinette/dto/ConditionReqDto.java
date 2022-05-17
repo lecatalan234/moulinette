@@ -2,6 +2,7 @@ package ma.oncf.sfa.moulinette.dto;
 
 import lombok.Data;
 import ma.oncf.sfa.moulinette.entities.ParametrageBancaire;
+import ma.oncf.sfa.moulinette.entities.ParametrageComptable;
 
 import javax.validation.constraints.NotBlank;
 
@@ -22,4 +23,5 @@ public class ConditionReqDto {
 
     private Integer classementCondition;
     private ParametrageBancaire parametrageBancaire;
+    private ParametrageComptable parametrageComptable;
 }

@@ -4,6 +4,7 @@ import ma.oncf.sfa.moulinette.dto.ConditionReqDto;
 import ma.oncf.sfa.moulinette.dto.ConditionResDto;
 import ma.oncf.sfa.moulinette.entities.Condition;
 import ma.oncf.sfa.moulinette.entities.ParametrageBancaire;
+import ma.oncf.sfa.moulinette.entities.ParametrageComptable;
 import ma.oncf.sfa.moulinette.mapper.ConditionMapper;
 import ma.oncf.sfa.moulinette.mapper.ParametrageBancaireMapper;
 import ma.oncf.sfa.moulinette.repositories.ConditionRepository;
@@ -71,12 +72,21 @@ public class ConditionServiceImpl implements ConditionService {
         }
 
         //Traduire les champs
-        if(conditionReqDto.getChamp().equals("Libellé")) champ = "libelle";
-        else if(conditionReqDto.getChamp().equals("Code opération")) champ = "coi";
-        else if(conditionReqDto.getChamp().equals("Sens")) champ = "sens";
-        else if(conditionReqDto.getChamp().equals("Numéro de compte")) champ = "numero_compte";
-        else if(conditionReqDto.getChamp().equals("Info 1")) champ = "info_complementaire";
-        else champ = "info_complementaire";
+        if(conditionReqDto.getParametrageBancaire() != null){
+            if(conditionReqDto.getChamp().equals("Libellé")) champ = "libelle";
+            else if(conditionReqDto.getChamp().equals("Code opération")) champ = "coi";
+            else if(conditionReqDto.getChamp().equals("Sens")) champ = "sens";
+            else if(conditionReqDto.getChamp().equals("Numéro de compte")) champ = "numero_compte";
+            else if(conditionReqDto.getChamp().equals("Info 1")) champ = "info_complementaire";
+            else champ = "info_complementaire";
+        }
+        else{
+            if(conditionReqDto.getChamp().equals("Libellé")) champ = "libelle";
+            else if(conditionReqDto.getChamp().equals("Référence")) champ = "reference";
+            else if(conditionReqDto.getChamp().equals("Imputaion")) champ = "imputation";
+            else if(conditionReqDto.getChamp().equals("Code Budgétaire")) champ = "code_budgetaire";
+            else champ = "compte_bancaire";
+        }
 
         //Ajouter la requete sous format SQL
         conditionSQL = opLogique + champ + " " + op  + " " + valeur;
@@ -102,6 +112,15 @@ public class ConditionServiceImpl implements ConditionService {
         ParametrageBancaire parametrageBancaire = new ParametrageBancaire();
         parametrageBancaire.setId(idParam);
         List<Condition> conditions = conditionRepository.findConditionByParametrageBancaire(parametrageBancaire);
+        return conditions.stream().map(condition -> conditionMapper.conditionToConditionDto(condition))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ConditionResDto> getConditionByParamCompta(Integer idParam) {
+        ParametrageComptable parametrageComptable = new ParametrageComptable();
+        parametrageComptable.setId(idParam);
+        List<Condition> conditions = conditionRepository.findConditionByParametrageComptable(parametrageComptable);
         return conditions.stream().map(condition -> conditionMapper.conditionToConditionDto(condition))
                 .collect(Collectors.toList());
     }

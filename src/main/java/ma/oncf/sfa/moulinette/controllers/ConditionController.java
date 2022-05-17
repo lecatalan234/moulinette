@@ -4,7 +4,6 @@ import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import ma.oncf.sfa.moulinette.dto.ConditionReqDto;
 import ma.oncf.sfa.moulinette.dto.ConditionResDto;
-import ma.oncf.sfa.moulinette.dto.ParametrageBancaireReqDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,4 +32,8 @@ public interface ConditionController {
     @Operation(tags = "Conditions")
     @GetMapping(path = "/conditions/ParamBancaire/{id}")
     ResponseEntity<List<ConditionResDto>> getAllConditionByParamBancaire(@PathVariable Integer id);
+
+    @Operation(tags = "Conditions")
+    @GetMapping(path = "/conditions/ParamComptable/{id}")
+    ResponseEntity<List<ConditionResDto>> getAllConditionByParamComptable(@PathVariable Integer id);
 }

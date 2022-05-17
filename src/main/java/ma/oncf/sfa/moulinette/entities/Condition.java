@@ -23,4 +23,8 @@ public class Condition extends Auditable<String>{
     @ManyToOne
     @JsonIgnore
     private ParametrageBancaire parametrageBancaire;
+
+    @ManyToOne
+    @JsonIgnore
+    private ParametrageComptable parametrageComptable;
 }

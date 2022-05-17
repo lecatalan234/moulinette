@@ -1,5 +1,6 @@
 package ma.oncf.sfa.moulinette.repositories;
 
+import ma.oncf.sfa.moulinette.entities.Comptabilite;
 import ma.oncf.sfa.moulinette.entities.EnrMouvement;
 import ma.oncf.sfa.moulinette.entities.Importation;
 
@@ -18,5 +19,11 @@ public class ImportationRepositoryCustomImpl implements ImportationRepositoryCus
     public List<EnrMouvement> selectMouvementCibUpdate(String requeteSql) {
         Query query = entityManager.createNativeQuery(requeteSql,EnrMouvement.class);
         return (List<EnrMouvement>) query.getResultList();
+    }
+
+    @Override
+    public List<Comptabilite> selectLignesComptaFluxUpdate(String requeteSql) {
+        Query query = entityManager.createNativeQuery(requeteSql,Comptabilite.class);
+        return (List<Comptabilite>) query.getResultList();
     }
 }

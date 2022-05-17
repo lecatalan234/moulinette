@@ -10,4 +10,5 @@ public interface BanqueService {
     BanqueResDto update(BanqueReqDto banqueReqDto, Integer id);
     void deleteById(Integer id);
     List<BanqueResDto> getAllBanques();
+    BanqueResDto getBanqueById(Integer id);
 }

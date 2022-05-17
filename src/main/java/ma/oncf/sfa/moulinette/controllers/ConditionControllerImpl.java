@@ -3,8 +3,6 @@ package ma.oncf.sfa.moulinette.controllers;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import ma.oncf.sfa.moulinette.dto.ConditionReqDto;
 import ma.oncf.sfa.moulinette.dto.ConditionResDto;
-import ma.oncf.sfa.moulinette.dto.ParametrageBancaireReqDto;
-import ma.oncf.sfa.moulinette.entities.ParametrageBancaire;
 import ma.oncf.sfa.moulinette.services.ConditionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -45,5 +43,10 @@ public class ConditionControllerImpl implements ConditionController {
     @Override
     public ResponseEntity<List<ConditionResDto>> getAllConditionByParamBancaire(Integer id) {
         return ResponseEntity.status(HttpStatus.OK).body(conditionService.getConditionByParamBancaire(id));
+    }
+
+    @Override
+    public ResponseEntity<List<ConditionResDto>> getAllConditionByParamComptable(Integer id) {
+        return ResponseEntity.status(HttpStatus.OK).body(conditionService.getConditionByParamCompta(id));
     }
 }

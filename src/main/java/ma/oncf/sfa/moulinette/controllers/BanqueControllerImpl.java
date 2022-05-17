@@ -40,4 +40,9 @@ public class BanqueControllerImpl implements BanqueController {
     public ResponseEntity<List<BanqueResDto>> getAllBanques() {
         return ResponseEntity.status(HttpStatus.OK).body(banqueService.getAllBanques());
     }
+
+    @Override
+    public ResponseEntity<BanqueResDto> getBanqueById(Integer id) {
+        return ResponseEntity.status(HttpStatus.OK).body(banqueService.getBanqueById(id));
+    }
 }

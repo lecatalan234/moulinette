@@ -4,6 +4,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 import io.swagger.v3.oas.annotations.Operation;
 import ma.oncf.sfa.moulinette.dto.ImportationResDto;
+import ma.oncf.sfa.moulinette.entities.Comptabilite;
 import ma.oncf.sfa.moulinette.entities.EnrMouvement;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
@@ -24,12 +25,22 @@ public interface ImportationController {
             @RequestParam("matricule") String matricule);
 
     @Operation(tags = "Importations")
+    @PostMapping(path = "/upload/compta", consumes = {"multipart/form-data"})
+    ResponseEntity<List<String>> chargementFichierComptable(
+            @ApiParam(hidden = true) @RequestParam("files") List<MultipartFile> multipartFiles,
+            @RequestParam("matricule") String matricule);
+
+    @Operation(tags = "Importations")
     @PutMapping(path = "/importation/enrichir-banc/{idImportation}")
     ResponseEntity<List<EnrMouvement>> enrichirFichierBancaire(@PathVariable Integer idImportation);
 
     @Operation(tags = "Importations")
+    @PutMapping(path = "/importation/enrichir-compta/{idImportation}")
+    ResponseEntity<List<Comptabilite>> enrichirFichierComptable(@PathVariable Integer idImportation);
+
+    @Operation(tags = "Importations")
     @GetMapping(path = "/importation/download/{idImportation}")
-    ResponseEntity<Resource> telechargerFichierBancaire(@PathVariable Integer idImportation) throws IOException;
+    ResponseEntity<Resource> telechargerFichier(@PathVariable Integer idImportation) throws IOException;
 
     @Operation(tags = "Importations")
     @GetMapping(path = "/importation")
@@ -46,4 +57,5 @@ public interface ImportationController {
     @Operation(tags = "Importations")
     @GetMapping(path = "/importation/last/{matricule}")
     ResponseEntity<Integer> getLastImportationByMatricule(@PathVariable String matricule);
+
 }

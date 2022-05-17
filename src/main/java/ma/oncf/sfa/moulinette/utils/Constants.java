@@ -25,4 +25,9 @@ public interface Constants {
         put("Q","D");
         put("R","D");
     }};
+
+    String uploadPath = "./moulinetteFiles/uploads/";
+
+    String downloadPath = "./moulinetteFiles/downloads/";
+
 }

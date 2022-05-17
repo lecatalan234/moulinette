@@ -3,6 +3,7 @@ package ma.oncf.sfa.moulinette.services;
 import ma.oncf.sfa.moulinette.dto.BanqueReqDto;
 import ma.oncf.sfa.moulinette.dto.BanqueResDto;
 import ma.oncf.sfa.moulinette.entities.Banque;
+import ma.oncf.sfa.moulinette.exception.EntityNotFoundException;
 import ma.oncf.sfa.moulinette.mapper.BanqueMapper;
 import ma.oncf.sfa.moulinette.repositories.BanqueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,5 +42,11 @@ public class BanqueServiceImpl implements BanqueService {
     public List<BanqueResDto> getAllBanques() {
         List<Banque> banques = banqueRepository.findAll();
         return banques.stream().map(banque -> banqueMapper.banqueToBanqueDto(banque)).collect(Collectors.toList());
+    }
+
+    @Override
+    public BanqueResDto getBanqueById(Integer id) {
+        Banque banque = this.banqueRepository.findById(id).orElseThrow(()->new EntityNotFoundException("Banque non trouve"));
+        return banqueMapper.banqueToBanqueDto(banque);
     }
 }

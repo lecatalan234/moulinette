@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.List;
@@ -37,8 +38,11 @@ public class EnrMouvement {
 
     @ManyToOne
     @JsonIgnore
-    EnrAncienSolde EnrAncienSolde;
+    @ToString.Exclude
+    private EnrAncienSolde EnrAncienSolde;
 
     @OneToMany(mappedBy = "enrMvt", cascade = CascadeType.ALL)
-    List<EnrComplement> enregistrementComplements;
+    @ToString.Exclude
+    @OrderBy("id")
+    private List<EnrComplement> enregistrementComplements;
 }
