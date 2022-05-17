@@ -6,6 +6,8 @@ import ma.oncf.sfa.moulinette.entities.*;
 import ma.oncf.sfa.moulinette.exception.EntityNotFoundException;
 import ma.oncf.sfa.moulinette.mapper.ImportationMapper;
 import ma.oncf.sfa.moulinette.repositories.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -29,6 +31,8 @@ import static ma.oncf.sfa.moulinette.utils.Constants.*;
 @Service
 @Transactional
 public class ImportationServiceImpl implements ImportationService {
+
+    Logger logger = LoggerFactory.getLogger(ImportationServiceImpl.class);
 
     @Autowired
     private ImportationRepository importationRepository;
@@ -384,7 +388,7 @@ public class ImportationServiceImpl implements ImportationService {
     @Transactional
     public List<EnrMouvement> enrichirFichierBancaire(Integer idImportation) {
 
-        System.out.println("*** Debut enrichissement ***");
+        logger.info("*** Debut enrichissement ***");
         String select_requete = "";
         List<EnrMouvement> enrMouvementList = new ArrayList<EnrMouvement>();
         List<EnrMouvement> enrMouvementListAll = new ArrayList<EnrMouvement>();
@@ -397,7 +401,7 @@ public class ImportationServiceImpl implements ImportationService {
         //********************************  Changement CIB *********************************************
         //recuperer la liste des parametrages bancaires d'une banque
         List<ParametrageBancaire> paramBancaire = this.parametrageBancaireRepository.findParametrageBancaireByBanque(banque);
-        System.out.println("*** Debut enrichissement : Changement CIB ***");
+        logger.info("*** Debut enrichissement : Changement CIB ***");
         for(ParametrageBancaire p : paramBancaire){
             if(p.getActif()){
                 select_requete = "SELECT * FROM enr_mouvement "+
@@ -426,26 +430,26 @@ public class ImportationServiceImpl implements ImportationService {
         //********************************************************************************************************
 
         //********************** Ajout Enregistrement 05 contenant le code Gare **********************************
-        System.out.println("*** Debut enrichissement comptes gares ***");
+        logger.info("*** Debut enrichissement comptes gares ***");
         enrMouvementListAll.addAll(this.AjoutCodeGare(idImportation, banque));
 
         //********************************************************************************************************
 
-        System.out.println("*** Creation du fichier bancaire ***");
+        logger.info("*** Creation du fichier bancaire ***");
         this.creerFichierBancaireEnrichi(idImportation);
 
         //Vider les lignes 01-04-05-07
-        System.out.println("*** Vider les lignes 01-04-05-07 ***");
+        logger.info("*** Vider les lignes 01-04-05-07 ***");
         List<EnrAncienSolde> enrAncienSoldes = enrAncienSoldeRepository.getAllLignesReleveByImporation(idImportation);
         this.enrAncienSoldeRepository.deleteAll(enrAncienSoldes);
 
-        System.out.println("*** Fin enrichissement ***");
+        logger.info("*** Fin enrichissement ***");
         return enrMouvementListAll;
     }
 
     @Override
     public List<Comptabilite> enrichirFichierComptable(Integer idImportation) {
-        System.out.println("*** Debut enrichissement ***");
+        logger.info("*** Debut enrichissement ***");
         String select_requete = "";
         List<Comptabilite> lignesComptabilite = new ArrayList<Comptabilite>();
         Comptabilite ligneCompta = new Comptabilite();
@@ -462,7 +466,7 @@ public class ImportationServiceImpl implements ImportationService {
                 for(Condition c: p.getConditions()){
                     select_requete = select_requete + " " +c.getConditionSQL();
                 }
-                System.out.println(select_requete);
+                logger.info(select_requete);
                 //Recuperer les lignes compta selon la condition
                 lignesComptabilite = this.importationRepository.selectLignesComptaFluxUpdate(select_requete);
 
@@ -477,15 +481,15 @@ public class ImportationServiceImpl implements ImportationService {
             }
         }
 
-        System.out.println("*** Creation du fichier comptable ***");
+        logger.info("*** Creation du fichier comptable ***");
         this.creerFichierComptableEnrichi(idImportation);
 
         //Vider la table comptabilite
-        System.out.println("*** Vider la table comptabilite ***");
+        logger.info("*** Vider la table comptabilite ***");
         List<Comptabilite> comptabilites = comptabiliteRepository.getAllLignesComptaByImportation(idImportation);
         this.comptabiliteRepository.deleteAll(comptabilites);
 
-        System.out.println("*** Fin enrichissement ***");
+        logger.info("*** Fin enrichissement ***");
 
         return lignesComptabilite;
     }
