@@ -26,8 +26,8 @@ public interface Constants {
         put("R","D");
     }};
 
-    String uploadPath = "./moulinetteFiles/uploads/";
+    String UPLOAD_PATH = "./moulinetteFiles/uploads/";
 
-    String downloadPath = "./moulinetteFiles/downloads/";
+    String DOWNLOAD_PATH = "./moulinetteFiles/downloads/";
 
 }

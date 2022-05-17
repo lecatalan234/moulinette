@@ -8,7 +8,6 @@ import ma.oncf.sfa.moulinette.security.utils.JwtUtil;
 import ma.oncf.sfa.moulinette.services.ApplicationUserDetailsService;
 import ma.oncf.sfa.moulinette.services.UtilisateurService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -35,14 +34,14 @@ public class AuthControllerImpl implements AuthController {
 
     @Override
     public ResponseEntity<AuthResDto> seconneter(AuthReqDto authReqDto) {
-        Boolean EtatCompte;
+        Boolean etatCompte = false;
         try{
-            EtatCompte= utilisateurService.getUtilisateurByMatricule(authReqDto.getMatricule()).getEtatCompte();
+            etatCompte= utilisateurService.getUtilisateurByMatricule(authReqDto.getMatricule()).getEtatCompte();
         }catch (Exception e){
             throw new EntityNotFoundException("Matricule et/ou Mot de passe incorrect");
         }
 
-        if(EtatCompte){
+        if(etatCompte){
             try{
                 authenticationManager.authenticate(
                         new UsernamePasswordAuthenticationToken(

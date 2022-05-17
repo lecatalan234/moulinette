@@ -62,7 +62,7 @@ public class ImportationServiceImpl implements ImportationService {
     @Override
     @Transactional
     public List<String> chargementFichierBancaire(List<MultipartFile> multipartFiles, Integer idBanque, String matricule) {
-        String PATH_UPLOAD_BANK = uploadPath;
+        String PATH_UPLOAD_BANK = UPLOAD_PATH;
 
         //Vider les lignes 01-04-05-07
         this.enrAncienSoldeRepository.deleteAll(enrAncienSoldeRepository.getAllLignesReleveByImporationUser(matricule));
@@ -114,7 +114,7 @@ public class ImportationServiceImpl implements ImportationService {
 
     @Override
     public List<String> chargementFichierComptable(List<MultipartFile> multipartFiles, String matricule) {
-        String PATH_UPLOAD_COMPTA = uploadPath;
+        String PATH_UPLOAD_COMPTA = UPLOAD_PATH;
 
         if(!multipartFiles.isEmpty()){
             Importation importation = new Importation();
@@ -161,7 +161,7 @@ public class ImportationServiceImpl implements ImportationService {
     //Inserer les lignes d'un fichier dans la BD
     @Transactional
     private void insererLigne(Fichier fichier, String TypeImportation){
-        String nom_fichier = uploadPath+fichier.getNomFichier();
+        String nom_fichier = UPLOAD_PATH+fichier.getNomFichier();
 
         //B = Importation Bancaire
         if(TypeImportation.equals("B")){
@@ -593,7 +593,7 @@ public class ImportationServiceImpl implements ImportationService {
             Importation importation = this.importationRepository.findById(idImportation).orElseThrow(()->new EntityNotFoundException("Importation non trouve"));
             Banque banque = importation.getBanque();
             Date date = new Date();
-            String PATH_DOWNLOAD_BANK = downloadPath;
+            String PATH_DOWNLOAD_BANK = DOWNLOAD_PATH;
             String outFileName = banque.getCodeBanque()+"_"+ date.getTime()/1000+"_"+importation.getId();
 
             // create a writer
@@ -700,7 +700,7 @@ public class ImportationServiceImpl implements ImportationService {
         try {
             Importation importation = this.importationRepository.findById(idImportation).orElseThrow(()->new EntityNotFoundException("Importation non trouve"));
             Date date = new Date();
-            String PATH_DOWNLOAD_COMPTA = downloadPath;
+            String PATH_DOWNLOAD_COMPTA = DOWNLOAD_PATH;
             String outFileName = "TS_"+ date.getTime()/1000+idImportation;
 
             // create a writer
