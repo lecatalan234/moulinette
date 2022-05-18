@@ -62,7 +62,7 @@ public class ImportationServiceImpl implements ImportationService {
     @Override
     @Transactional
     public List<String> chargementFichierBancaire(List<MultipartFile> multipartFiles, Integer idBanque, String matricule) {
-        String PATH_UPLOAD_BANK = UPLOAD_PATH;
+        String pathUploadBank = UPLOAD_PATH;
 
         //Vider les lignes 01-04-05-07
         this.enrAncienSoldeRepository.deleteAll(enrAncienSoldeRepository.getAllLignesReleveByImporationUser(matricule));
@@ -87,7 +87,7 @@ public class ImportationServiceImpl implements ImportationService {
                 for (MultipartFile file : multipartFiles){
                     String filename = StringUtils.cleanPath(file.getOriginalFilename());
                     Files.copy(file.getInputStream(),
-                            Paths.get(PATH_UPLOAD_BANK + importation.getId()+ "_" + file.getOriginalFilename()),
+                            Paths.get(pathUploadBank + importation.getId()+ "_" + file.getOriginalFilename()),
                             StandardCopyOption.REPLACE_EXISTING);
                     filenames.add(filename);
                     Fichier fichier = new Fichier();
@@ -98,7 +98,7 @@ public class ImportationServiceImpl implements ImportationService {
                     Fichier savedFichier = fichierRepository.save(fichier);
                     //inserer le contenu du fichier dans la base de donnees
                     this.insererLigne(savedFichier, "B");
-                    String path = PATH_UPLOAD_BANK + importation.getId()+ "_" + file.getOriginalFilename();
+                    String path = pathUploadBank + importation.getId()+ "_" + file.getOriginalFilename();
                     Files.delete(Path.of(path));
                 }
             }
@@ -114,7 +114,7 @@ public class ImportationServiceImpl implements ImportationService {
 
     @Override
     public List<String> chargementFichierComptable(List<MultipartFile> multipartFiles, String matricule) {
-        String PATH_UPLOAD_COMPTA = UPLOAD_PATH;
+        String pathUploadCompta = UPLOAD_PATH;
 
         if(!multipartFiles.isEmpty()){
             Importation importation = new Importation();
@@ -134,7 +134,7 @@ public class ImportationServiceImpl implements ImportationService {
                 for (MultipartFile file : multipartFiles){
                     String filename = StringUtils.cleanPath(file.getOriginalFilename());
                     Files.copy(file.getInputStream(),
-                            Paths.get(PATH_UPLOAD_COMPTA + importation.getId()+ "_" + file.getOriginalFilename()),
+                            Paths.get(pathUploadCompta + importation.getId()+ "_" + file.getOriginalFilename()),
                             StandardCopyOption.REPLACE_EXISTING);
                     filenames.add(filename);
                     Fichier fichier = new Fichier();
@@ -145,7 +145,7 @@ public class ImportationServiceImpl implements ImportationService {
                     Fichier savedFichier = fichierRepository.save(fichier);
                     //inserer le contenu du fichier dans la base de donnees
                     this.insererLigne(savedFichier, "C");
-                    String path = PATH_UPLOAD_COMPTA + importation.getId()+ "_" + file.getOriginalFilename();
+                    String path = pathUploadCompta + importation.getId()+ "_" + file.getOriginalFilename();
                     Files.delete(Path.of(path));
                 }
             }
@@ -593,14 +593,14 @@ public class ImportationServiceImpl implements ImportationService {
             Importation importation = this.importationRepository.findById(idImportation).orElseThrow(()->new EntityNotFoundException("Importation non trouve"));
             Banque banque = importation.getBanque();
             Date date = new Date();
-            String PATH_DOWNLOAD_BANK = DOWNLOAD_PATH;
+            String PathDownloadBank = DOWNLOAD_PATH;
             String outFileName = banque.getCodeBanque()+"_"+ date.getTime()/1000+"_"+importation.getId();
 
             // create a writer
-            FileOutputStream fos = new FileOutputStream(PATH_DOWNLOAD_BANK + outFileName + ".txt");
+            FileOutputStream fos = new FileOutputStream(PathDownloadBank + outFileName + ".txt");
             //ANSI ENCODAGE
             OutputStreamWriter writer = new OutputStreamWriter(fos, Charset.forName("Cp1252"));
-            String CIB = "";
+            String cib = "";
 
             List<EnrAncienSolde> lignes = enrAncienSoldeRepository.getAllLignesReleveByImporation(idImportation);
 
@@ -624,8 +624,8 @@ public class ImportationServiceImpl implements ImportationService {
                 //Enregistrement 04
                 for (EnrMouvement mvt : ligne.getEnregistrementMouvements()){
                     //Verifier si le CIB est modifie
-                    if(mvt.getNouveauCib() == null) CIB = mvt.getCib();
-                    else CIB = mvt.getNouveauCib();
+                    if(mvt.getNouveauCib() == null) cib = mvt.getCib();
+                    else cib = mvt.getNouveauCib();
 
                     writer.write(mvt.getCodeEnregistrement());
                     writer.write(mvt.getCodeBanque());
@@ -635,7 +635,7 @@ public class ImportationServiceImpl implements ImportationService {
                     writer.write(mvt.getNbrDecimalesMontant());
                     writer.write(mvt.getZoneReservee1());
                     writer.write(mvt.getNumeroCompte());
-                    writer.write(CIB);
+                    writer.write(cib);
                     writer.write(mvt.getDateOperation());
                     writer.write(mvt.getCodeMotifRejet());
                     writer.write(mvt.getDateValeur());
@@ -690,7 +690,7 @@ public class ImportationServiceImpl implements ImportationService {
             importation.setOutFile(outFileName);
             importationRepository.save(importation);
         } catch (IOException ex) {
-            throw new RuntimeException(ex);
+            throw new RuntimeException(ex.getMessage());
         }
 
     }
@@ -700,11 +700,11 @@ public class ImportationServiceImpl implements ImportationService {
         try {
             Importation importation = this.importationRepository.findById(idImportation).orElseThrow(()->new EntityNotFoundException("Importation non trouve"));
             Date date = new Date();
-            String PATH_DOWNLOAD_COMPTA = DOWNLOAD_PATH;
+            String PathDownloadCompta = DOWNLOAD_PATH;
             String outFileName = "TS_"+ date.getTime()/1000+idImportation;
 
             // create a writer
-            FileOutputStream fos = new FileOutputStream(PATH_DOWNLOAD_COMPTA + outFileName + ".txt");
+            FileOutputStream fos = new FileOutputStream(PathDownloadCompta + outFileName + ".txt");
             //ANSI ENCODAGE
             OutputStreamWriter writer = new OutputStreamWriter(fos);
             String flux = "";
@@ -745,7 +745,7 @@ public class ImportationServiceImpl implements ImportationService {
             importationRepository.save(importation);
 
         }catch (IOException ex) {
-            throw new RuntimeException(ex);
+            throw new RuntimeException(ex.getMessage());
         }
     }
 

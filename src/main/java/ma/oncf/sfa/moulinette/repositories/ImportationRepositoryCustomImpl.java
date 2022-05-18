@@ -2,13 +2,12 @@ package ma.oncf.sfa.moulinette.repositories;
 
 import ma.oncf.sfa.moulinette.entities.Comptabilite;
 import ma.oncf.sfa.moulinette.entities.EnrMouvement;
-import ma.oncf.sfa.moulinette.entities.Importation;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import java.util.List;
 
-public class ImportationRepositoryCustomImpl implements ImportationRepositoryCustom<Importation, Integer> {
+public class ImportationRepositoryCustomImpl implements ImportationRepositoryCustom{
     private final EntityManager entityManager;
 
     public ImportationRepositoryCustomImpl(EntityManager entityManager) {

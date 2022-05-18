@@ -28,7 +28,7 @@ public class EnrMouvement {
     private String dateValeur;
     private String libelle;
     private String zoneReservee2;
-    private String NumEcriture;
+    private String numEcriture;
     private String indiceExoCommession;
     private String indiceIndisponibilite;
     private String montant;

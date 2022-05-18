@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Constants {
-    public final static Map<String, String> SENS;
+    public static final Map<String, String> SENS;
     static {
         SENS = new HashMap<>();
         SENS.put("{","C");
@@ -29,8 +29,8 @@ public class Constants {
         SENS.put("R","D");
     }
 
-    public final static String UPLOAD_PATH = "./moulinetteFiles/uploads/";
+    public static final String UPLOAD_PATH = "./moulinetteFiles/uploads/";
 
-    public final static String DOWNLOAD_PATH = "./moulinetteFiles/downloads/";
+    public static final String DOWNLOAD_PATH = "./moulinetteFiles/downloads/";
 
 }

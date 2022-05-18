@@ -20,9 +20,9 @@ public class EnrAncienSolde {
     private String codeDevise;
     private String nbrDecimalesMontant;
     private String zoneReservee2;
-    private String NumeroCompte;
+    private String numeroCompte;
     private String zoneReservee3;
-    private String DateSolde;
+    private String dateSolde;
     private String zoneReservee4;
     private String montant;
     private String zoneReservee5;

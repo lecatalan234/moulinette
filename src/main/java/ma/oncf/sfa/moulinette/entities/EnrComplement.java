@@ -20,7 +20,7 @@ public class EnrComplement {
     private String codeDevise;
     private String nbrDecimalesMontant;
     private String zoneReservee1;
-    private String NumeroCompte;
+    private String numeroCompte;
     private String cib;
     private String dateOperation;
     private String zoneReservee2;

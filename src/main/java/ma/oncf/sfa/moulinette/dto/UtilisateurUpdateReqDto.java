@@ -16,7 +16,7 @@ public class UtilisateurUpdateReqDto {
 
     private String matricule;
 
-    private Boolean EtatCompte;
+    private Boolean etatCompte;
 
     private Role role;
 }
