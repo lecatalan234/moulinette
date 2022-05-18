@@ -690,7 +690,7 @@ public class ImportationServiceImpl implements ImportationService {
             importation.setOutFile(outFileName);
             importationRepository.save(importation);
         } catch (IOException ex) {
-            ex.printStackTrace();
+            throw new RuntimeException(ex);
         }
 
     }
@@ -745,7 +745,7 @@ public class ImportationServiceImpl implements ImportationService {
             importationRepository.save(importation);
 
         }catch (IOException ex) {
-            ex.printStackTrace();
+            throw new RuntimeException(ex);
         }
     }
 
