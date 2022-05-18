@@ -29,7 +29,7 @@ public class UtilisateurReqDto {
     private String motDePasse;
 
     @NotNull(message = "Sélectionnez l'état du compte")
-    private Boolean EtatCompte;
+    private Boolean etatCompte;
 
     private Role role;
 }

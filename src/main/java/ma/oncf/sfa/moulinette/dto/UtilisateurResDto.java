@@ -9,6 +9,6 @@ public class UtilisateurResDto {
     private String nom;
     private String prenom;
     private String matricule;
-    private Boolean EtatCompte;
+    private Boolean etatCompte;
     private Role role;
 }

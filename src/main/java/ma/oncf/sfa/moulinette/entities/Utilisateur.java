@@ -19,7 +19,7 @@ public class Utilisateur extends Auditable<String> {
     private String motDePasse;
 
     @Column(columnDefinition = "boolean")
-    private Boolean EtatCompte;
+    private Boolean etatCompte;
 
     @ManyToOne
     private Role role;
