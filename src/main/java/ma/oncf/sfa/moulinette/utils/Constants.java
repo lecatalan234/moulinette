@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class Constants {
 
-    private Constants(){};
+    private Constants(){}
 
     public static final Map<String, String> SENS;
     static {
