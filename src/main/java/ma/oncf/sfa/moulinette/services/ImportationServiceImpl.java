@@ -103,7 +103,7 @@ public class ImportationServiceImpl implements ImportationService {
                 }
             }
             catch (IOException e){
-                throw new RuntimeException(e);
+                throw new RuntimeException(e.getMessage());
             }
 
             return filenames;
@@ -150,7 +150,7 @@ public class ImportationServiceImpl implements ImportationService {
                 }
             }
             catch (IOException e){
-                throw new RuntimeException(e);
+                throw new RuntimeException(e.getMessage());
             }
 
             return filenames;
@@ -219,7 +219,7 @@ public class ImportationServiceImpl implements ImportationService {
                     }
                     input.close();
                 }catch (IOException e){
-                    throw new RuntimeException(e);
+                    throw new RuntimeException(e.getMessage());
                 }
 
 
@@ -324,7 +324,7 @@ public class ImportationServiceImpl implements ImportationService {
                 }
 
             }catch (IOException e){
-                throw new RuntimeException(e);
+                throw new RuntimeException(e.getMessage());
             }
         }
         //C= Imporation Comptable
@@ -348,7 +348,7 @@ public class ImportationServiceImpl implements ImportationService {
                     }
                     input.close();
                 }catch (IOException e){
-                    throw new RuntimeException(e);
+                    throw new RuntimeException(e.getMessage());
                 }
 
                 for(String line: lignes){
@@ -375,7 +375,7 @@ public class ImportationServiceImpl implements ImportationService {
 
                 }
             }catch (IOException e){
-                throw new RuntimeException(e);
+                throw new RuntimeException(e.getMessage());
             }
         }
 
