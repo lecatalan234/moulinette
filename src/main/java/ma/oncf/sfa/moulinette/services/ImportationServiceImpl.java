@@ -168,7 +168,7 @@ public class ImportationServiceImpl implements ImportationService {
             this.insererLigneBancaire(fichier, typeImportation, nomFichier);
         }
         //C= Imporation Comptable
-        else this.insererLigneBancaire(fichier, typeImportation, nomFichier);
+        else this.insererLigneCompta(fichier, typeImportation, nomFichier);
     }
 
     //Inserer les ligne Bancaire
