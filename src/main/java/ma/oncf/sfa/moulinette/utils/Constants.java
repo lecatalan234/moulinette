@@ -1,8 +1,11 @@
 package ma.oncf.sfa.moulinette.utils;
 
+import lombok.NoArgsConstructor;
+
 import java.util.HashMap;
 import java.util.Map;
 
+@NoArgsConstructor
 public class Constants {
     public static final Map<String, String> SENS;
     static {
