@@ -36,4 +36,7 @@ public class Constants {
 
     public static final String DOWNLOAD_PATH = "./moulinetteFiles/downloads/";
 
+    public static final String USER_NOT_FOUND = "Utilisateur non trouvé";
+
+    public static final String IMPORT_NOT_FOUND = "Importation non trouvée";
 }

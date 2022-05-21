@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ma.oncf.sfa.moulinette.utils.Constants.USER_NOT_FOUND;
+
 @Service
 public class UtilisateurServiceImpl implements UtilisateurService {
 
@@ -41,7 +43,7 @@ public class UtilisateurServiceImpl implements UtilisateurService {
     @Override
     public UtilisateurUpdateResDto update(UtilisateurUpdateReqDto utilisateurUpdateReqDto, Integer id) {
         Utilisateur user = utilisateurRepository.findById(id)
-                .orElseThrow(()->new EntityNotFoundException("Utilisateur non trouvé"));
+                .orElseThrow(()->new EntityNotFoundException(USER_NOT_FOUND));
 
         utilisateurUpdateReqDto.setId(id);
         Utilisateur utilisateur = utilisateurUpdateMapper.utilisateurUpdateDtoToUtilisateur(utilisateurUpdateReqDto);
@@ -62,7 +64,7 @@ public class UtilisateurServiceImpl implements UtilisateurService {
     @Override
     public UtilisateurResDto getUtilisateurById(Integer id) {
         return utilisateurMapper.utilisateurToUtilsateurDTO(utilisateurRepository.findById(id)
-                .orElseThrow(()->new EntityNotFoundException("Utilisateur non trouvé")));
+                .orElseThrow(()->new EntityNotFoundException(USER_NOT_FOUND)));
     }
 
     @Override
@@ -70,7 +72,7 @@ public class UtilisateurServiceImpl implements UtilisateurService {
 
         if(changerMotDePasseDto.getMotDePasse().equals(changerMotDePasseDto.getConfirmMotDePasse())){
             Utilisateur utilisateur = utilisateurRepository.findById(changerMotDePasseDto.getId())
-                    .orElseThrow(()->new EntityNotFoundException("Utilisateur non trouvé"));
+                    .orElseThrow(()->new EntityNotFoundException(USER_NOT_FOUND));
 
             utilisateur.setMotDePasse(passwordEncoder.encode(changerMotDePasseDto.getMotDePasse()));
             return utilisateurMapper.utilisateurToUtilsateurDTO(utilisateurRepository.save(utilisateur));

@@ -392,7 +392,7 @@ public class ImportationServiceImpl implements ImportationService {
         EnrMouvement enrMouvement = new EnrMouvement();
 
         //recuperer la banque a partir d une importation
-        Importation importation = this.importationRepository.findById(idImportation).orElseThrow(()->new EntityNotFoundException("Importation non trouve"));
+        Importation importation = this.importationRepository.findById(idImportation).orElseThrow(()->new EntityNotFoundException(IMPORT_NOT_FOUND));
         Banque banque = importation.getBanque();
 
         //********************************  Changement CIB *********************************************
@@ -595,7 +595,7 @@ public class ImportationServiceImpl implements ImportationService {
     private void creerFichierBancaireEnrichi(Integer idImportation){
 
         try {
-            Importation importation = this.importationRepository.findById(idImportation).orElseThrow(()->new EntityNotFoundException("Importation non trouve"));
+            Importation importation = this.importationRepository.findById(idImportation).orElseThrow(()->new EntityNotFoundException(IMPORT_NOT_FOUND));
             Banque banque = importation.getBanque();
             Date date = new Date();
             String pathDownloadBank = DOWNLOAD_PATH;
@@ -703,7 +703,7 @@ public class ImportationServiceImpl implements ImportationService {
     @Transactional
     private void creerFichierComptableEnrichi(Integer idImportation){
         try {
-            Importation importation = this.importationRepository.findById(idImportation).orElseThrow(()->new EntityNotFoundException("Importation non trouve"));
+            Importation importation = this.importationRepository.findById(idImportation).orElseThrow(()->new EntityNotFoundException(IMPORT_NOT_FOUND));
             Date date = new Date();
             String pathDownloadCompta = DOWNLOAD_PATH;
             String outFileName = "TS_"+ date.getTime()/1000+idImportation;
@@ -757,7 +757,7 @@ public class ImportationServiceImpl implements ImportationService {
     @Override
     public String telechargerFichier(Integer idImportation){
         Importation importation = this.importationRepository.findById(idImportation)
-                .orElseThrow(()->new EntityNotFoundException("Importation non trouve"));
+                .orElseThrow(()->new EntityNotFoundException(IMPORT_NOT_FOUND));
         return importation.getOutFile() + ".txt";
     }
 
