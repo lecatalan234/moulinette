@@ -2,8 +2,8 @@ package ma.oncf.sfa.moulinette.dto;
 
 import lombok.Data;
 import ma.oncf.sfa.moulinette.entities.Role;
-import ma.oncf.sfa.moulinette.validation.uniqueValidation.UniqueValidation;
 import ma.oncf.sfa.moulinette.validation.password.PasswordValidation;
+import ma.oncf.sfa.moulinette.validation.unique.UniqueValidation;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
