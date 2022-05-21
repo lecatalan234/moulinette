@@ -150,7 +150,7 @@ public class ImportationServiceImpl implements ImportationService {
                 }
             }
             catch (IOException e){
-                throw new RuntimeException(e.getMessage());
+                throw new RuntimeException("");
             }
 
             return filenames;
@@ -165,220 +165,227 @@ public class ImportationServiceImpl implements ImportationService {
 
         //B = Importation Bancaire
         if(typeImportation.equals("B")){
-            Integer idEnrAncienSolde = null;
-            Integer idEnrMouvement = null;
-            try (Scanner scanner = new Scanner(new File(nomFichier))) {
-                int charCode;
-                Integer longueurLigne = 0;
-                List<String> lignes = new ArrayList<String>();
-                String ligne = "";
-
-                try(FileInputStream file = new FileInputStream(nomFichier)){
-                    //ANSI ENCODAGE
-                    InputStreamReader input = new InputStreamReader(file,Charset.forName("Cp1252"));
-
-                    //Objet utilise seulement pour savoir si le fichier est composent d'une seule ligne ou plusieurs lignes de 120 caracteres
-                    FileInputStream fstream = new FileInputStream(nomFichier);
-                    BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
-
-
-                    //Tester si la ligne egal a 120 caractere (donc le fichier est compose de plusieurs lignes de 120 caracteres)
-                    if(br.readLine().length() == 120){
-                        //lire caractere par caractere
-                        while ((charCode = input.read()) != -1) {
-                            // si le caractere lu egale a un saut de ligne (code char = 10)
-                            if(charCode != 10){
-                                ligne = ligne + ((char) charCode);
-                            }
-                            //passer a la ligne suivante
-                            else{
-                                lignes.add(ligne);
-                                ligne = "";
-                            }
-                        }
-                    }
-                    //Dans ce cas le fichier contient seulement une seul ligne qui contient plusieurs types d'enregistrement 01-04-05-07
-                    else{
-                        while ((charCode = input.read()) != -1) {
-                            //pour lire seulement 120 caracteres
-                            if (longueurLigne<=119){
-                                ligne = ligne + ((char) charCode);
-                                longueurLigne++;
-                                if(!input.ready()){
-                                    lignes.add(ligne);
-                                }
-                            }
-                            //passer au 120 caracteres suivants
-                            else {
-                                lignes.add(ligne);
-                                ligne = "" + ((char) charCode);
-                                longueurLigne = 1;
-                            }
-                        }
-
-                    }
-                    input.close();
-                }catch (IOException e){
-                    throw new RuntimeException(e.getMessage());
-                }
-
-
-                for(String line : lignes){
-                    //Charger les lignes du Solde Initial (commence par 01))
-                    if(line.substring(0,2).equals("01")){
-                        EnrAncienSolde enrAncienSolde = new EnrAncienSolde();
-                        enrAncienSolde.setCodeEnregistrement("01");
-                        enrAncienSolde.setCodeBanque(line.substring(2,7));
-                        enrAncienSolde.setZoneReservee1(line.substring(7,11));
-                        enrAncienSolde.setCodeGuichet(line.substring(11,16));
-                        enrAncienSolde.setCodeDevise(line.substring(16,19));
-                        enrAncienSolde.setNbrDecimalesMontant(line.substring(19,20));
-                        enrAncienSolde.setZoneReservee2(line.substring(20,21));
-                        enrAncienSolde.setNumeroCompte(line.substring(21,32));
-                        enrAncienSolde.setZoneReservee3(line.substring(32,34));
-                        enrAncienSolde.setDateSolde(line.substring(34,40));
-                        enrAncienSolde.setZoneReservee4(line.substring(40,90));
-                        enrAncienSolde.setMontant(line.substring(90,104));
-                        enrAncienSolde.setZoneReservee5(line.substring(104,120));
-                        enrAncienSolde.setFichier(fichier);
-
-                        idEnrAncienSolde = enrAncienSoldeRepository.save(enrAncienSolde).getId();
-                    }
-                    //Charger les lignes du Solde Final (commence par 07))
-                    else if (line.substring(0,2).equals("07")){
-                        EnrNouveauSolde enrNouveauSolde = new EnrNouveauSolde();
-                        EnrAncienSolde enrAncienSolde = new EnrAncienSolde();
-                        enrAncienSolde.setId(idEnrAncienSolde);
-
-                        enrNouveauSolde.setEnrAncienSolde(enrAncienSolde);
-                        enrNouveauSolde.setCodeEnregistrement("07");
-                        enrNouveauSolde.setCodeBanque(line.substring(2,7));
-                        enrNouveauSolde.setZoneReservee1(line.substring(7,11));
-                        enrNouveauSolde.setCodeGuichet(line.substring(11,16));
-                        enrNouveauSolde.setCodeDevise(line.substring(16,19));
-                        enrNouveauSolde.setNbrDecimalesMontant(line.substring(19,20));
-                        enrNouveauSolde.setZoneReservee2(line.substring(20,21));
-                        enrNouveauSolde.setNumeroCompte(line.substring(21,32));
-                        enrNouveauSolde.setZoneReservee3(line.substring(32,34));
-                        enrNouveauSolde.setDateSolde(line.substring(34,40));
-                        enrNouveauSolde.setZoneReservee4(line.substring(40,90));
-                        enrNouveauSolde.setMontant(line.substring(90,104));
-                        enrNouveauSolde.setZoneReservee5(line.substring(104,120));
-
-                        enrNouveauSoldeRepository.save(enrNouveauSolde);
-                    }
-                    //Charger les lignes de Mouvement (commence par 04))
-                    if(line.substring(0,2).equals("04")){
-                        EnrMouvement enrMouvement = new EnrMouvement();
-                        EnrAncienSolde enrAncienSolde = new EnrAncienSolde();
-                        enrAncienSolde.setId(idEnrAncienSolde);
-
-                        enrMouvement.setEnrAncienSolde(enrAncienSolde);
-                        enrMouvement.setCodeEnregistrement("04");
-                        enrMouvement.setCodeBanque(line.substring(2,7));
-                        enrMouvement.setCoi(line.substring(7,11));
-                        enrMouvement.setCodeGuichet(line.substring(11,16));
-                        enrMouvement.setCodeDevise(line.substring(16,19));
-                        enrMouvement.setNbrDecimalesMontant(line.substring(19,20));
-                        enrMouvement.setZoneReservee1(line.substring(20,21));
-                        enrMouvement.setNumeroCompte(line.substring(21,32));
-                        enrMouvement.setCib(line.substring(32,34));
-                        enrMouvement.setDateOperation(line.substring(34,40));
-                        enrMouvement.setCodeMotifRejet(line.substring(40,42));
-                        enrMouvement.setDateValeur(line.substring(42,48));
-                        enrMouvement.setLibelle(line.substring(48,79));
-                        enrMouvement.setZoneReservee2(line.substring(79,81));
-                        enrMouvement.setNumEcriture(line.substring(81,88));
-                        enrMouvement.setIndiceExoCommession(line.substring(88,89));
-                        enrMouvement.setIndiceIndisponibilite(line.substring(89,90));
-                        enrMouvement.setMontant(line.substring(90,104));
-                        enrMouvement.setSens( sensMontant(line.substring(90,104)));
-                        enrMouvement.setZoneReference(line.substring(104,120));
-
-                        idEnrMouvement = enrMouvementRepository.save(enrMouvement).getId();
-                    }
-                    //Charger les lignes Complement (commence par 05))
-                    if(line.substring(0,2).equals("05")){
-                        EnrComplement enrComplement = new EnrComplement();
-                        EnrMouvement enrMouvement = new EnrMouvement();
-                        enrMouvement.setId(idEnrMouvement);
-
-                        enrComplement.setEnrMvt(enrMouvement);
-                        enrComplement.setCodeEnregistrement("05");
-                        enrComplement.setCodeBanque(line.substring(2,7));
-                        enrComplement.setCoi(line.substring(7,11));
-                        enrComplement.setCodeGuichet(line.substring(11,16));
-                        enrComplement.setCodeDevise(line.substring(16,19));
-                        enrComplement.setNbrDecimalesMontant(line.substring(19,20));
-                        enrComplement.setZoneReservee1(line.substring(20,21));
-                        enrComplement.setNumeroCompte(line.substring(21,32));
-                        enrComplement.setCib(line.substring(32,34));
-                        enrComplement.setDateOperation(line.substring(34,40));
-                        enrComplement.setZoneReservee2(line.substring(40,45));
-                        enrComplement.setQualifiantZone(line.substring(45,48));
-                        enrComplement.setInfoComplementaire(line.substring(48,118));
-                        enrComplement.setZoneReservee3(line.substring(118,120));
-
-                        enrComplementRepository.save(enrComplement);
-                    }
-                }
-
-            }catch (IOException e){
-                throw new RuntimeException(e.getMessage());
-            }
+            this.insererLigneBancaire(fichier, typeImportation, nomFichier);
         }
         //C= Imporation Comptable
-        else{
-            try (Scanner scanner = new Scanner(new File(nomFichier))) {
-                int charCode;
-                String ligne = "";
-                List<String> lignes = new ArrayList<String>();
-                try(FileInputStream file = new FileInputStream(nomFichier)){
-                    InputStreamReader input = new InputStreamReader(file);
+        else this.insererLigneBancaire(fichier, typeImportation, nomFichier);
+    }
+
+    //Inserer les ligne Bancaire
+    private void insererLigneBancaire(Fichier fichier, String typeImportation, String nomFichier){
+        Integer idEnrAncienSolde = null;
+        Integer idEnrMouvement = null;
+        try (Scanner scanner = new Scanner(new File(nomFichier))) {
+            int charCode;
+            Integer longueurLigne = 0;
+            List<String> lignes = new ArrayList<String>();
+            String ligne = "";
+
+            try(FileInputStream file = new FileInputStream(nomFichier)){
+                //ANSI ENCODAGE
+                InputStreamReader input = new InputStreamReader(file,Charset.forName("Cp1252"));
+
+                //Objet utilise seulement pour savoir si le fichier est composent d'une seule ligne ou plusieurs lignes de 120 caracteres
+                FileInputStream fstream = new FileInputStream(nomFichier);
+                BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
+
+
+                //Tester si la ligne egal a 120 caractere (donc le fichier est compose de plusieurs lignes de 120 caracteres)
+                if(br.readLine().length() == 120){
                     //lire caractere par caractere
                     while ((charCode = input.read()) != -1) {
-                        //Test si un saut de ligne
+                        // si le caractere lu egale a un saut de ligne (code char = 10)
                         if(charCode != 10){
                             ligne = ligne + ((char) charCode);
                         }
+                        //passer a la ligne suivante
                         else{
                             lignes.add(ligne);
                             ligne = "";
                         }
                     }
-                    input.close();
-                }catch (IOException e){
-                    throw new RuntimeException(e.getMessage());
                 }
-
-                for(String line: lignes){
-                    Comptabilite ligneCompta = new Comptabilite();
-                    ligneCompta.setCompteBancaire(line.substring(0,9));
-                    ligneCompta.setCodeFlux(line.substring(9,13));
-                    ligneCompta.setCodeBudgetaire(line.substring(13,17));
-                    ligneCompta.setDateComptable(line.substring(17,25));
-                    ligneCompta.setDateValeur(line.substring(27,35));
-                    ligneCompta.setMontant(line.substring(36,56));
-                    ligneCompta.setCode(line.substring(57,58));
-                    ligneCompta.setReference(line.substring(58,73));
-                    ligneCompta.setLibelle(line.substring(73,103));
-                    ligneCompta.setCompteComptable(line.substring(103,115));
-                    ligneCompta.setImputation(line.substring(115,127));
-                    ligneCompta.setLibelleComplementaire(line.substring(127, 131));
-                    ligneCompta.setCodeAnnulation(line.substring(138,139));
-                    ligneCompta.setNumeroPiece(line.substring(139,151));
-                    ligneCompta.setDevise(line.substring(295,298));
-                    ligneCompta.setSens(line.substring(298,299));
-                    ligneCompta.setFichier(fichier);
-
-                    comptabiliteRepository.save(ligneCompta);
+                //Dans ce cas le fichier contient seulement une seul ligne qui contient plusieurs types d'enregistrement 01-04-05-07
+                else{
+                    while ((charCode = input.read()) != -1) {
+                        //pour lire seulement 120 caracteres
+                        if (longueurLigne<=119){
+                            ligne = ligne + ((char) charCode);
+                            longueurLigne++;
+                            if(!input.ready()){
+                                lignes.add(ligne);
+                            }
+                        }
+                        //passer au 120 caracteres suivants
+                        else {
+                            lignes.add(ligne);
+                            ligne = "" + ((char) charCode);
+                            longueurLigne = 1;
+                        }
+                    }
 
                 }
+                input.close();
             }catch (IOException e){
                 throw new RuntimeException(e.getMessage());
             }
-        }
 
+
+            for(String line : lignes){
+                //Charger les lignes du Solde Initial (commence par 01))
+                if(line.substring(0,2).equals("01")){
+                    EnrAncienSolde enrAncienSolde = new EnrAncienSolde();
+                    enrAncienSolde.setCodeEnregistrement("01");
+                    enrAncienSolde.setCodeBanque(line.substring(2,7));
+                    enrAncienSolde.setZoneReservee1(line.substring(7,11));
+                    enrAncienSolde.setCodeGuichet(line.substring(11,16));
+                    enrAncienSolde.setCodeDevise(line.substring(16,19));
+                    enrAncienSolde.setNbrDecimalesMontant(line.substring(19,20));
+                    enrAncienSolde.setZoneReservee2(line.substring(20,21));
+                    enrAncienSolde.setNumeroCompte(line.substring(21,32));
+                    enrAncienSolde.setZoneReservee3(line.substring(32,34));
+                    enrAncienSolde.setDateSolde(line.substring(34,40));
+                    enrAncienSolde.setZoneReservee4(line.substring(40,90));
+                    enrAncienSolde.setMontant(line.substring(90,104));
+                    enrAncienSolde.setZoneReservee5(line.substring(104,120));
+                    enrAncienSolde.setFichier(fichier);
+
+                    idEnrAncienSolde = enrAncienSoldeRepository.save(enrAncienSolde).getId();
+                }
+                //Charger les lignes du Solde Final (commence par 07))
+                else if (line.substring(0,2).equals("07")){
+                    EnrNouveauSolde enrNouveauSolde = new EnrNouveauSolde();
+                    EnrAncienSolde enrAncienSolde = new EnrAncienSolde();
+                    enrAncienSolde.setId(idEnrAncienSolde);
+
+                    enrNouveauSolde.setEnrAncienSolde(enrAncienSolde);
+                    enrNouveauSolde.setCodeEnregistrement("07");
+                    enrNouveauSolde.setCodeBanque(line.substring(2,7));
+                    enrNouveauSolde.setZoneReservee1(line.substring(7,11));
+                    enrNouveauSolde.setCodeGuichet(line.substring(11,16));
+                    enrNouveauSolde.setCodeDevise(line.substring(16,19));
+                    enrNouveauSolde.setNbrDecimalesMontant(line.substring(19,20));
+                    enrNouveauSolde.setZoneReservee2(line.substring(20,21));
+                    enrNouveauSolde.setNumeroCompte(line.substring(21,32));
+                    enrNouveauSolde.setZoneReservee3(line.substring(32,34));
+                    enrNouveauSolde.setDateSolde(line.substring(34,40));
+                    enrNouveauSolde.setZoneReservee4(line.substring(40,90));
+                    enrNouveauSolde.setMontant(line.substring(90,104));
+                    enrNouveauSolde.setZoneReservee5(line.substring(104,120));
+
+                    enrNouveauSoldeRepository.save(enrNouveauSolde);
+                }
+                //Charger les lignes de Mouvement (commence par 04))
+                if(line.substring(0,2).equals("04")){
+                    EnrMouvement enrMouvement = new EnrMouvement();
+                    EnrAncienSolde enrAncienSolde = new EnrAncienSolde();
+                    enrAncienSolde.setId(idEnrAncienSolde);
+
+                    enrMouvement.setEnrAncienSolde(enrAncienSolde);
+                    enrMouvement.setCodeEnregistrement("04");
+                    enrMouvement.setCodeBanque(line.substring(2,7));
+                    enrMouvement.setCoi(line.substring(7,11));
+                    enrMouvement.setCodeGuichet(line.substring(11,16));
+                    enrMouvement.setCodeDevise(line.substring(16,19));
+                    enrMouvement.setNbrDecimalesMontant(line.substring(19,20));
+                    enrMouvement.setZoneReservee1(line.substring(20,21));
+                    enrMouvement.setNumeroCompte(line.substring(21,32));
+                    enrMouvement.setCib(line.substring(32,34));
+                    enrMouvement.setDateOperation(line.substring(34,40));
+                    enrMouvement.setCodeMotifRejet(line.substring(40,42));
+                    enrMouvement.setDateValeur(line.substring(42,48));
+                    enrMouvement.setLibelle(line.substring(48,79));
+                    enrMouvement.setZoneReservee2(line.substring(79,81));
+                    enrMouvement.setNumEcriture(line.substring(81,88));
+                    enrMouvement.setIndiceExoCommession(line.substring(88,89));
+                    enrMouvement.setIndiceIndisponibilite(line.substring(89,90));
+                    enrMouvement.setMontant(line.substring(90,104));
+                    enrMouvement.setSens( sensMontant(line.substring(90,104)));
+                    enrMouvement.setZoneReference(line.substring(104,120));
+
+                    idEnrMouvement = enrMouvementRepository.save(enrMouvement).getId();
+                }
+                //Charger les lignes Complement (commence par 05))
+                if(line.substring(0,2).equals("05")){
+                    EnrComplement enrComplement = new EnrComplement();
+                    EnrMouvement enrMouvement = new EnrMouvement();
+                    enrMouvement.setId(idEnrMouvement);
+
+                    enrComplement.setEnrMvt(enrMouvement);
+                    enrComplement.setCodeEnregistrement("05");
+                    enrComplement.setCodeBanque(line.substring(2,7));
+                    enrComplement.setCoi(line.substring(7,11));
+                    enrComplement.setCodeGuichet(line.substring(11,16));
+                    enrComplement.setCodeDevise(line.substring(16,19));
+                    enrComplement.setNbrDecimalesMontant(line.substring(19,20));
+                    enrComplement.setZoneReservee1(line.substring(20,21));
+                    enrComplement.setNumeroCompte(line.substring(21,32));
+                    enrComplement.setCib(line.substring(32,34));
+                    enrComplement.setDateOperation(line.substring(34,40));
+                    enrComplement.setZoneReservee2(line.substring(40,45));
+                    enrComplement.setQualifiantZone(line.substring(45,48));
+                    enrComplement.setInfoComplementaire(line.substring(48,118));
+                    enrComplement.setZoneReservee3(line.substring(118,120));
+
+                    enrComplementRepository.save(enrComplement);
+                }
+            }
+
+        }catch (IOException e){
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    //Inserer les ligne Compta
+    private void insererLigneCompta(Fichier fichier, String typeImportation, String nomFichier){
+        try (Scanner scanner = new Scanner(new File(nomFichier))) {
+            int charCode;
+            String ligne = "";
+            List<String> lignes = new ArrayList<String>();
+            try(FileInputStream file = new FileInputStream(nomFichier)){
+                InputStreamReader input = new InputStreamReader(file);
+                //lire caractere par caractere
+                while ((charCode = input.read()) != -1) {
+                    //Test si un saut de ligne
+                    if(charCode != 10){
+                        ligne = ligne + ((char) charCode);
+                    }
+                    else{
+                        lignes.add(ligne);
+                        ligne = "";
+                    }
+                }
+                input.close();
+            }catch (IOException e){
+                throw new RuntimeException(e.getMessage());
+            }
+
+            for(String line: lignes){
+                Comptabilite ligneCompta = new Comptabilite();
+                ligneCompta.setCompteBancaire(line.substring(0,9));
+                ligneCompta.setCodeFlux(line.substring(9,13));
+                ligneCompta.setCodeBudgetaire(line.substring(13,17));
+                ligneCompta.setDateComptable(line.substring(17,25));
+                ligneCompta.setDateValeur(line.substring(27,35));
+                ligneCompta.setMontant(line.substring(36,56));
+                ligneCompta.setCode(line.substring(57,58));
+                ligneCompta.setReference(line.substring(58,73));
+                ligneCompta.setLibelle(line.substring(73,103));
+                ligneCompta.setCompteComptable(line.substring(103,115));
+                ligneCompta.setImputation(line.substring(115,127));
+                ligneCompta.setLibelleComplementaire(line.substring(127, 131));
+                ligneCompta.setCodeAnnulation(line.substring(138,139));
+                ligneCompta.setNumeroPiece(line.substring(139,151));
+                ligneCompta.setDevise(line.substring(295,298));
+                ligneCompta.setSens(line.substring(298,299));
+                ligneCompta.setFichier(fichier);
+
+                comptabiliteRepository.save(ligneCompta);
+
+            }
+        }catch (IOException e){
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     @Override
