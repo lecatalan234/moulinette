@@ -1,12 +1,12 @@
 package ma.oncf.sfa.moulinette.utils;
 
-import lombok.NoArgsConstructor;
-
 import java.util.HashMap;
 import java.util.Map;
 
-@NoArgsConstructor
 public class Constants {
+
+    private Constants(){};
+
     public static final Map<String, String> SENS;
     static {
         SENS = new HashMap<>();
