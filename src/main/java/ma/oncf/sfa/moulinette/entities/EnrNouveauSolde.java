@@ -28,5 +28,5 @@ public class EnrNouveauSolde {
 
     @OneToOne
     @JsonIgnore
-    EnrAncienSolde EnrAncienSolde;
+    EnrAncienSolde enrAncienSolde;
 }

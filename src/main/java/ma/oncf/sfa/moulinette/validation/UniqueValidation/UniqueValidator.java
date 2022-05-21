@@ -1,4 +1,4 @@
-package ma.oncf.sfa.moulinette.validation.UniqueValidation;
+package ma.oncf.sfa.moulinette.validation.uniqueValidation;
 
 import ma.oncf.sfa.moulinette.repositories.UtilisateurRepository;
 

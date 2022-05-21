@@ -27,11 +27,11 @@ public class EnrAncienSolde {
     private String montant;
     private String zoneReservee5;
 
-    @OneToMany(mappedBy = "EnrAncienSolde", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "enrAncienSolde", cascade = CascadeType.ALL)
     @ToString.Exclude
     private List<EnrMouvement> enregistrementMouvements;
 
-    @OneToOne(mappedBy = "EnrAncienSolde", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "enrAncienSolde", cascade = CascadeType.ALL)
     @ToString.Exclude
     private EnrNouveauSolde enregistrementNouveauSolde;
 

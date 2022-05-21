@@ -21,7 +21,7 @@ public class EnrMouvement {
     private String codeDevise;
     private String nbrDecimalesMontant;
     private String zoneReservee1;
-    private String NumeroCompte;
+    private String numeroCompte;
     private String cib;
     private String dateOperation;
     private String codeMotifRejet;
@@ -39,7 +39,7 @@ public class EnrMouvement {
     @ManyToOne
     @JsonIgnore
     @ToString.Exclude
-    private EnrAncienSolde EnrAncienSolde;
+    private EnrAncienSolde enrAncienSolde;
 
     @OneToMany(mappedBy = "enrMvt", cascade = CascadeType.ALL)
     @ToString.Exclude
