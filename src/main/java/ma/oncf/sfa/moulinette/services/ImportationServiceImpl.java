@@ -410,10 +410,7 @@ public class ImportationServiceImpl implements ImportationService {
                     bld.append(" ");
                     bld.append(c.getConditionSQL());
                 }
-
                 selectRequete = bld.toString();
-
-                System.out.println(selectRequete);
 
                 //Recuperer les mouvements selon la condition
                 enrMouvementList = this.importationRepository.selectMouvementCibUpdate(selectRequete);
@@ -466,10 +463,15 @@ public class ImportationServiceImpl implements ImportationService {
                         "WHERE fichier_id IN (SELECT id from fichier where importation_id ='"+idImportation+"') "+
                         "AND code_flux = '" + p.getFlux().getCodeFlux() + "' AND ";
 
+                StringBuilder bld = new StringBuilder();
+                bld.append(selectRequete);
+
                 for(Condition c: p.getConditions()){
-                    selectRequete = selectRequete + " " +c.getConditionSQL();
+                    bld.append(" ");
+                    bld.append(c.getConditionSQL());
                 }
-                logger.info(selectRequete);
+                selectRequete = bld.toString();
+
                 //Recuperer les lignes compta selon la condition
                 lignesComptabilite = this.importationRepository.selectLignesComptaFluxUpdate(selectRequete);
 
