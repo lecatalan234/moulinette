@@ -404,10 +404,16 @@ public class ImportationServiceImpl implements ImportationService {
                 selectRequete = "SELECT * FROM enr_mouvement "+
                         "WHERE enr_ancien_solde_id IN (SELECT id from enr_ancien_solde where fichier_id IN (SELECT id from fichier where importation_id ='"+idImportation+"')) "+
                         "AND cib = '" + p.getCib() + "' AND ";
-
+                StringBuilder bld = new StringBuilder();
+                bld.append(selectRequete);
                 for(Condition c: p.getConditions()){
-                    selectRequete = selectRequete + " " +c.getConditionSQL();
+                    bld.append(" ");
+                    bld.append(c.getConditionSQL());
                 }
+
+                selectRequete = bld.toString();
+
+                System.out.println(selectRequete);
 
                 //Recuperer les mouvements selon la condition
                 enrMouvementList = this.importationRepository.selectMouvementCibUpdate(selectRequete);
