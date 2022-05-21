@@ -21,6 +21,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
+import static ma.oncf.sfa.moulinette.utils.Constants.DOWNLOAD_PATH;
+
 @RestController
 @RequestMapping("/api/v1")
 @SecurityRequirement(name = "moulinette-api")
@@ -51,9 +53,8 @@ public class ImportationControllerImpl implements ImportationController {
 
     @Override
     public ResponseEntity<Resource> telechargerFichier(Integer idImportation) throws IOException {
-        String PATH_DOWNLOAD_BANK = "./moulinetteFiles/downloads/";
         String filename = importationService.telechargerFichier(idImportation);
-        Path filePath = Path.of(PATH_DOWNLOAD_BANK+filename);
+        Path filePath = Path.of(DOWNLOAD_PATH+filename);
         if(!Files.exists(filePath)) {
             throw new FileNotFoundException(filename + " non trouve au niveau du serveur");
         }

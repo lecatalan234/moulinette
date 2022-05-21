@@ -10,7 +10,7 @@ import java.util.List;
 public class FluxReqDto {
     private Integer id;
     @NotBlank(message = "Entrez le flux comptable")
-    private String flux;
+    private String codeFlux;
     @NotBlank(message = "Entrez la désignation")
     private String designation;
     private List<ParametrageComptable> parametrageComptables;

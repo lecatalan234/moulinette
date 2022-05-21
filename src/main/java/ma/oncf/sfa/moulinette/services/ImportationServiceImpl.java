@@ -160,25 +160,25 @@ public class ImportationServiceImpl implements ImportationService {
 
     //Inserer les lignes d'un fichier dans la BD
     @Transactional
-    private void insererLigne(Fichier fichier, String TypeImportation){
-        String nom_fichier = UPLOAD_PATH+fichier.getNomFichier();
+    private void insererLigne(Fichier fichier, String typeImportation){
+        String nomFichier = UPLOAD_PATH+fichier.getNomFichier();
 
         //B = Importation Bancaire
-        if(TypeImportation.equals("B")){
+        if(typeImportation.equals("B")){
             Integer idEnrAncienSolde = null;
             Integer idEnrMouvement = null;
-            try (Scanner scanner = new Scanner(new File(nom_fichier))) {
+            try (Scanner scanner = new Scanner(new File(nomFichier))) {
                 int charCode;
                 Integer longueurLigne = 0;
                 List<String> lignes = new ArrayList<String>();
                 String ligne = "";
 
-                try(FileInputStream file = new FileInputStream(nom_fichier)){
+                try(FileInputStream file = new FileInputStream(nomFichier)){
                     //ANSI ENCODAGE
                     InputStreamReader input = new InputStreamReader(file,Charset.forName("Cp1252"));
 
                     //Objet utilise seulement pour savoir si le fichier est composent d'une seule ligne ou plusieurs lignes de 120 caracteres
-                    FileInputStream fstream = new FileInputStream(nom_fichier);
+                    FileInputStream fstream = new FileInputStream(nomFichier);
                     BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
 
 
@@ -200,9 +200,6 @@ public class ImportationServiceImpl implements ImportationService {
                     //Dans ce cas le fichier contient seulement une seul ligne qui contient plusieurs types d'enregistrement 01-04-05-07
                     else{
                         while ((charCode = input.read()) != -1) {
-                            if((char) charCode =='�'){
-                            /*    charCode ='°';
-                            */}
                             //pour lire seulement 120 caracteres
                             if (longueurLigne<=119){
                                 ligne = ligne + ((char) charCode);
@@ -332,11 +329,11 @@ public class ImportationServiceImpl implements ImportationService {
         }
         //C= Imporation Comptable
         else{
-            try (Scanner scanner = new Scanner(new File(nom_fichier))) {
+            try (Scanner scanner = new Scanner(new File(nomFichier))) {
                 int charCode;
                 String ligne = "";
                 List<String> lignes = new ArrayList<String>();
-                try(FileInputStream file = new FileInputStream(nom_fichier)){
+                try(FileInputStream file = new FileInputStream(nomFichier)){
                     InputStreamReader input = new InputStreamReader(file);
                     //lire caractere par caractere
                     while ((charCode = input.read()) != -1) {
@@ -389,7 +386,7 @@ public class ImportationServiceImpl implements ImportationService {
     public List<EnrMouvement> enrichirFichierBancaire(Integer idImportation) {
 
         logger.info("*** Debut enrichissement ***");
-        String select_requete = "";
+        String selectRequete = "";
         List<EnrMouvement> enrMouvementList = new ArrayList<EnrMouvement>();
         List<EnrMouvement> enrMouvementListAll = new ArrayList<EnrMouvement>();
         EnrMouvement enrMouvement = new EnrMouvement();
@@ -404,16 +401,16 @@ public class ImportationServiceImpl implements ImportationService {
         logger.info("*** Debut enrichissement : Changement CIB ***");
         for(ParametrageBancaire p : paramBancaire){
             if(p.getActif()){
-                select_requete = "SELECT * FROM enr_mouvement "+
+                selectRequete = "SELECT * FROM enr_mouvement "+
                         "WHERE enr_ancien_solde_id IN (SELECT id from enr_ancien_solde where fichier_id IN (SELECT id from fichier where importation_id ='"+idImportation+"')) "+
                         "AND cib = '" + p.getCib() + "' AND ";
 
                 for(Condition c: p.getConditions()){
-                    select_requete = select_requete + " " +c.getConditionSQL();
+                    selectRequete = selectRequete + " " +c.getConditionSQL();
                 }
 
                 //Recuperer les mouvements selon la condition
-                enrMouvementList = this.importationRepository.selectMouvementCibUpdate(select_requete);
+                enrMouvementList = this.importationRepository.selectMouvementCibUpdate(selectRequete);
 
                 //Parcourir les mouvements pour mettre a jour le CIB
                 for(EnrMouvement mouvement : enrMouvementList){
@@ -431,7 +428,7 @@ public class ImportationServiceImpl implements ImportationService {
 
         //********************** Ajout Enregistrement 05 contenant le code Gare **********************************
         logger.info("*** Debut enrichissement comptes gares ***");
-        enrMouvementListAll.addAll(this.AjoutCodeGare(idImportation, banque));
+        enrMouvementListAll.addAll(this.ajoutCodeGare(idImportation, banque));
 
         //********************************************************************************************************
 
@@ -450,7 +447,7 @@ public class ImportationServiceImpl implements ImportationService {
     @Override
     public List<Comptabilite> enrichirFichierComptable(Integer idImportation) {
         logger.info("*** Debut enrichissement ***");
-        String select_requete = "";
+        String selectRequete = "";
         List<Comptabilite> lignesComptabilite = new ArrayList<Comptabilite>();
         Comptabilite ligneCompta = new Comptabilite();
 
@@ -459,22 +456,22 @@ public class ImportationServiceImpl implements ImportationService {
         List<ParametrageComptable> parametrageComptables = parametrageComptableRepository.findAll();
         for(ParametrageComptable p : parametrageComptables){
             if(p.getActif()){
-                select_requete = "SELECT * FROM comptabilite "+
+                selectRequete = "SELECT * FROM comptabilite "+
                         "WHERE fichier_id IN (SELECT id from fichier where importation_id ='"+idImportation+"') "+
-                        "AND code_flux = '" + p.getFlux().getFlux() + "' AND ";
+                        "AND code_flux = '" + p.getFlux().getCodeFlux() + "' AND ";
 
                 for(Condition c: p.getConditions()){
-                    select_requete = select_requete + " " +c.getConditionSQL();
+                    selectRequete = selectRequete + " " +c.getConditionSQL();
                 }
-                logger.info(select_requete);
+                logger.info(selectRequete);
                 //Recuperer les lignes compta selon la condition
-                lignesComptabilite = this.importationRepository.selectLignesComptaFluxUpdate(select_requete);
+                lignesComptabilite = this.importationRepository.selectLignesComptaFluxUpdate(selectRequete);
 
                 //Parcourir les lignes compta pour mettre a jour le flux
                 for(Comptabilite ligne : lignesComptabilite){
                     ligneCompta = comptabiliteRepository.findById(ligne.getId()).orElseThrow(()->new EntityNotFoundException("ligne compta non trouvé"));
                     ligneCompta.setId(ligne.getId());
-                    ligneCompta.setNouveauFlux(p.getNouveauFlux().getFlux());
+                    ligneCompta.setNouveauFlux(p.getNouveauFlux().getCodeFlux());
                     comptabiliteRepository.save(ligneCompta);
                 }
 
@@ -495,7 +492,7 @@ public class ImportationServiceImpl implements ImportationService {
     }
 
     @Transactional
-    private List<EnrMouvement> AjoutCodeGare(Integer idImportation, Banque banque){
+    private List<EnrMouvement> ajoutCodeGare(Integer idImportation, Banque banque){
         List<EnrMouvement> lignesMouvement = new ArrayList<EnrMouvement>();
 
         if(banque.getCodeBanque().equals("BMCE") || banque.getCodeBanque().equals("SG")){
@@ -593,11 +590,11 @@ public class ImportationServiceImpl implements ImportationService {
             Importation importation = this.importationRepository.findById(idImportation).orElseThrow(()->new EntityNotFoundException("Importation non trouve"));
             Banque banque = importation.getBanque();
             Date date = new Date();
-            String PathDownloadBank = DOWNLOAD_PATH;
+            String pathDownloadBank = DOWNLOAD_PATH;
             String outFileName = banque.getCodeBanque()+"_"+ date.getTime()/1000+"_"+importation.getId();
 
             // create a writer
-            FileOutputStream fos = new FileOutputStream(PathDownloadBank + outFileName + ".txt");
+            FileOutputStream fos = new FileOutputStream(pathDownloadBank + outFileName + ".txt");
             //ANSI ENCODAGE
             OutputStreamWriter writer = new OutputStreamWriter(fos, Charset.forName("Cp1252"));
             String cib = "";
@@ -700,11 +697,11 @@ public class ImportationServiceImpl implements ImportationService {
         try {
             Importation importation = this.importationRepository.findById(idImportation).orElseThrow(()->new EntityNotFoundException("Importation non trouve"));
             Date date = new Date();
-            String PathDownloadCompta = DOWNLOAD_PATH;
+            String pathDownloadCompta = DOWNLOAD_PATH;
             String outFileName = "TS_"+ date.getTime()/1000+idImportation;
 
             // create a writer
-            FileOutputStream fos = new FileOutputStream(PathDownloadCompta + outFileName + ".txt");
+            FileOutputStream fos = new FileOutputStream(pathDownloadCompta + outFileName + ".txt");
             //ANSI ENCODAGE
             OutputStreamWriter writer = new OutputStreamWriter(fos);
             String flux = "";

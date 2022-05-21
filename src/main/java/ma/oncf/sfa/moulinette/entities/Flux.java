@@ -16,7 +16,7 @@ public class Flux extends Auditable<String>{
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String flux;
+    private String codeFlux;
     private String designation;
 
     @OneToMany(mappedBy = "flux")

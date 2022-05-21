@@ -17,12 +17,12 @@ public class ImportationRepositoryCustomImpl implements ImportationRepositoryCus
     @Override
     public List<EnrMouvement> selectMouvementCibUpdate(String requeteSql) {
         Query query = entityManager.createNativeQuery(requeteSql,EnrMouvement.class);
-        return (List<EnrMouvement>) query.getResultList();
+        return query.getResultList();
     }
 
     @Override
     public List<Comptabilite> selectLignesComptaFluxUpdate(String requeteSql) {
         Query query = entityManager.createNativeQuery(requeteSql,Comptabilite.class);
-        return (List<Comptabilite>) query.getResultList();
+        return query.getResultList();
     }
 }
